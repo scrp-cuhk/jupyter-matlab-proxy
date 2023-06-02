@@ -22,6 +22,7 @@ def _get_env(port, base_url):
         mwi_env.get_env_name_app_port(): str(port),
         mwi_env.get_env_name_base_url(): f"{base_url}matlab",
         mwi_env.get_env_name_app_host(): "127.0.0.1",
+        mwi_env.get_env_name_network_license_manager(): "/opt/network/matlab/R2021a.txt"
     }
 
 
@@ -51,5 +52,5 @@ def setup_matlab():
         "timeout": 100,
         "environment": _get_env,
         "absolute_url": True,
-        "launcher_entry": {"title": "Open MATLAB", "icon_path": icon_path},
+        "launcher_entry": {"title": "MATLAB GUI", "icon_path": icon_path},
     }
