@@ -34,25 +34,39 @@ def test_fetch_matlab_proxy_status_unauth_request(monkeypatch):
     assert MockUnauthorisedRequestResponse().exception_msg in str(exceptionInfo.value)
 
 
-def test_fetch_matlab_proxy_status(monkeypatch):
+@pytest.mark.parametrize(
+    "input_lic_type, expected_license_status",
+    [
+        ("mhlm_entitled", True),
+        ("mhlm_unentitled", False),
+        ("nlm", True),
+        ("existing_license", True),
+        ("default", False),
+    ],
+)
+def test_fetch_matlab_proxy_status(
+    input_lic_type, expected_license_status, monkeypatch
+):
     """
     This test checks that fetch_matlab_proxy_status returns the correct
     values for a valid request to matlab-proxy.
     """
 
     def mock_get(*args, **kwargs):
-        return MockMatlabProxyStatusResponse(True, "up", False)
+        return MockMatlabProxyStatusResponse(
+            lic_type=input_lic_type, matlab_status="up", has_error=False
+        )
 
     monkeypatch.setattr(requests, "get", mock_get)
 
     (
-        is_matlab_licened,
+        is_matlab_licensed,
         matlab_status,
         matlab_proxy_has_error,
     ) = fetch_matlab_proxy_status("", "{}")
-    assert is_matlab_licened == True
+    assert is_matlab_licensed == expected_license_status
     assert matlab_status == "up"
-    assert matlab_proxy_has_error == True
+    assert matlab_proxy_has_error == False
 
 
 def test_interrupt_request_bad_request(monkeypatch):
@@ -89,8 +103,9 @@ def test_execution_request_bad_request(monkeypatch):
     url = ""
     headers = {}
     code = "placeholder for code"
+    kernelid = ""
     with pytest.raises(HTTPError) as exceptionInfo:
-        send_execution_request_to_matlab(url, headers, code)
+        send_execution_request_to_matlab(url, headers, code, kernelid)
     assert mock_exception_message in str(exceptionInfo.value)
 
 
@@ -119,8 +134,9 @@ def test_execution_request_invalid_feval_response(monkeypatch):
     url = ""
     headers = {}
     code = "placeholder for code"
+    kernelid = ""
     with pytest.raises(HTTPError) as exceptionInfo:
-        send_execution_request_to_matlab(url, headers, code)
+        send_execution_request_to_matlab(url, headers, code, kernelid)
     assert str(exceptionInfo.value) == ""
 
 
@@ -161,8 +177,9 @@ def test_execution_interrupt(monkeypatch):
     url = ""
     headers = {}
     code = "placeholder for code"
+    kernelid = ""
     with pytest.raises(Exception) as exceptionInfo:
-        send_execution_request_to_matlab(url, headers, code)
+        send_execution_request_to_matlab(url, headers, code, kernelid)
     assert "Operation may have interrupted by user" in str(exceptionInfo.value)
 
 
@@ -198,8 +215,9 @@ def test_execution_success(monkeypatch):
     url = ""
     headers = {}
     code = "placeholder for code"
+    kernelid = ""
     try:
-        outputs = send_execution_request_to_matlab(url, headers, code)
+        outputs = send_execution_request_to_matlab(url, headers, code, kernelid)
     except Exception as exceptionInfo:
         pytest.fail("Unexpected failured in execution request")
 

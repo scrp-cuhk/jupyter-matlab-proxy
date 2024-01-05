@@ -10,7 +10,7 @@ Click on `MATLAB Kernel` to create a Jupyter notebook for MATLAB.
 
 |Jupyter Notebook| JupyterLab |
 |--|--|
-|<p align="center"><img width="200" src="https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/classic-jupyter.png"></p> | <p align="center"><img width="500" src="https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/jupyterlab-notebook-section.png"></p> |
+|<p align="center"><img width="200" src="https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/classic-jupyter-kernel.png"></p> | <p align="center"><img width="500" src="https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/jupyterlab_kernel_icon.png"></p> |
 
 ## Architecture
 
@@ -33,7 +33,7 @@ Click on `MATLAB Kernel` to create a Jupyter notebook for MATLAB.
     * Any variables or data created through the notebook manifests in the spawned MATLAB process.
     * This implies that all notebooks access the same MATLAB workspace, and users must keep this in mind when working with multiple notebooks.
 
-* If simulaneous execution requests are made from two notebooks, they are processed by MATLAB in a **first-in, first-out basis**.
+* If simultaneous execution requests are made from two notebooks, they are processed by MATLAB in a **first-in, first-out basis**.
 
 * Kernel interrupts can be used to interrupt the execution that is currently being processed by MATLAB.
 
@@ -46,7 +46,11 @@ Click on `MATLAB Kernel` to create a Jupyter notebook for MATLAB.
     * Inline static plot images
     * LaTeX representation for symbolic expressions
 * **For MATLAB R2022b and later:** Local functions can be defined at the end of a cell for use in the same cell
-    ![cellLocalFunctions](https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/cell-local-function.png)
+    <p><img src="https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/local_functions.png"></p>
+* **For MATLAB R2024a and later:** Tables are formatted using HTML instead of ASCII
+    | Before R2024a | After R2024a |
+    |--|--|
+    |<p align="center"><img width="550" src="https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/tables_before_r2024a.png"></p> | <p align="center"><img width="500" src="https://github.com/mathworks/jupyter-matlab-proxy/raw/main/img/tables_after_r2024a.png"></p> |
 
 ## Limitations
 Please refer to this [README](https://github.com/mathworks/jupyter-matlab-proxy#limitations) file for a listing of the current limitations. 
@@ -58,6 +62,6 @@ If you encounter a technical issue or have an enhancement request, create an iss
 
 ----
 
-Copyright (c) 2023 The MathWorks, Inc. All rights reserved.
+Copyright 2023 The MathWorks, Inc.
 
 ----

@@ -34,7 +34,8 @@ def fetch_matlab_proxy_status(url, headers):
     resp = requests.get(url + "/get_status", headers=headers, verify=False)
     if resp.status_code == requests.codes.OK:
         data = resp.json()
-        is_matlab_licensed = data["licensing"] != None
+        is_matlab_licensed = check_licensing_status(data)
+
         matlab_status = data["matlab"]["status"]
         matlab_proxy_has_error = data["error"] != None
         return is_matlab_licensed, matlab_status, matlab_proxy_has_error
@@ -42,15 +43,24 @@ def fetch_matlab_proxy_status(url, headers):
         resp.raise_for_status()
 
 
-def send_execution_request_to_matlab(url, headers, code):
+def check_licensing_status(data):
+    licensing_status = data["licensing"] != None
+
+    # Check for entitlementId only in the event of online licensing
+    if licensing_status and data["licensing"]["type"] == "mhlm":
+        licensing_status = data["licensing"]["entitlementId"] != None
+    return licensing_status
+
+
+def send_execution_request_to_matlab(url, headers, code, kernelid):
     """
     Evaluate MATLAB code and capture results.
 
     Args:
-        kernelid (string): A unique kernel identifier.
         url (string): Url of matlab-proxy server
         headers (dict): HTTP headers required for communicating with matlab-proxy
         code (string): MATLAB code to be evaluated
+        kernelid (string): A unique kernel identifier.
 
     Returns:
         List(dict): list of outputs captured during evaluation.
@@ -58,7 +68,7 @@ def send_execution_request_to_matlab(url, headers, code):
     Raises:
         HTTPError: Occurs when connection to matlab-proxy cannot be established.
     """
-    return _send_jupyter_request_to_matlab(url, headers, "execute", [code])
+    return _send_jupyter_request_to_matlab(url, headers, "execute", [code, kernelid])
 
 
 def send_completion_request_to_matlab(url, headers, code, cursor_pos):
@@ -89,6 +99,21 @@ def send_completion_request_to_matlab(url, headers, code, cursor_pos):
         HTTPError: Occurs when connection to matlab-proxy cannot be established.
     """
     return _send_jupyter_request_to_matlab(url, headers, "complete", [code, cursor_pos])
+
+
+def send_shutdown_request_to_matlab(url, headers, kernelid):
+    """
+    Perform cleanup tasks related to kernel shutdown.
+
+    Args:
+        url (string): Url of matlab-proxy server
+        headers (dict): HTTP headers required for communicating with matlab-proxy
+        kernelid (string): A unique kernel identifier.
+
+    Raises:
+        HTTPError: Occurs when connection to matlab-proxy cannot be established.
+    """
+    return _send_jupyter_request_to_matlab(url, headers, "shutdown", [kernelid])
 
 
 def send_interrupt_request_to_matlab(url, headers):
