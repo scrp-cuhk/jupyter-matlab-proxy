@@ -12,7 +12,7 @@ function result = execute(code, kernelId)
 % of a unique Live Script. Hence, each execution request can be considered as
 % creating and running a new Live Script file.
 
-% Copyright 2023 The MathWorks, Inc.
+% Copyright 2023-2024 The MathWorks, Inc.
 
 % Embed user MATLAB code in a try-catch block for MATLAB versions less than R2022b.
 % This is will disable inbuilt ErrorRecovery mechanism. Any exceptions created in
@@ -270,5 +270,7 @@ result.mimetype = {"text/html", "text/plain"};
 result.value = [sprintf("%s",text), text];
 
 % Helper function to notify browser page load finished
-function pageLoadCallback(~,~,idler)
+function pageLoadCallback(webwindow,~,idler)
 idler.stopIdling();
+% Disable alert box which is preventing running JS after certain period of time.
+webwindow.executeJS('window.alert = function(){}');
