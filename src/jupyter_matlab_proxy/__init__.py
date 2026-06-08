@@ -25,12 +25,26 @@ def _get_env(port, base_url):
         [Dict]: Containing environment settings to launch the MATLAB Desktop.
     """
 
-    return {
+    env = {
         mpm_env.get_env_name_mwi_mpm_port(): str(port),
         mpm_env.get_env_name_mwi_mpm_auth_token(): _MPM_AUTH_TOKEN,
         mpm_env.get_env_name_mwi_mpm_parent_pid(): _JUPYTER_SERVER_PID,
         mpm_env.get_env_name_base_url_prefix(): f"{base_url}",
     }
+
+    # Add MATLAB Path
+    new_dir = "/opt/network/matlab/matlab/bin"
+    old_path = os.getenv("PATH", "")
+    paths = old_path.split(os.pathsep) if old_path else []
+    if new_dir not in paths:
+        paths.append(new_dir)
+    new_path = os.pathsep.join(paths)
+    env["PATH"] = new_path
+
+    # Add license file
+    env[mpm_env.get_env_name_network_license_manager()] = "/opt/network/matlab/license_files/License_File_R2024a.dat"
+
+    return env
 
 
 def setup_matlab():
@@ -59,7 +73,7 @@ def _get_jsp_config(logger):
         "timeout": 100,  # timeout in seconds
         "environment": _get_env,
         "absolute_url": True,
-        "launcher_entry": {"title": "Open MATLAB", "icon_path": icon_path},
+        "launcher_entry": {"title": "MATLAB GUI", "icon_path": icon_path},
     }
     logger.debug("Launch Command: %s", jsp_config.get("command"))
 
