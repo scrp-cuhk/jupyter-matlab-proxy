@@ -6,6 +6,7 @@ from pathlib import Path
 
 import matlab_proxy_manager
 import matlab_proxy_manager.utils.environment_variables as mpm_env
+import matlab_proxy.util.mwi.environment_variables as mwi_env
 from matlab_proxy.util.mwi import logger as mwi_logger
 from matlab_proxy_manager.utils import constants
 
@@ -25,26 +26,13 @@ def _get_env(port, base_url):
         [Dict]: Containing environment settings to launch the MATLAB Desktop.
     """
 
-    env = {
+    return = {
         mpm_env.get_env_name_mwi_mpm_port(): str(port),
         mpm_env.get_env_name_mwi_mpm_auth_token(): _MPM_AUTH_TOKEN,
         mpm_env.get_env_name_mwi_mpm_parent_pid(): _JUPYTER_SERVER_PID,
         mpm_env.get_env_name_base_url_prefix(): f"{base_url}",
+        mwi_env.get_env_name_network_license_manager(): "/opt/network/matlab/license_files/License_File_R2024a.dat"
     }
-
-    # Add MATLAB Path
-    new_dir = "/opt/network/matlab/matlab/bin"
-    old_path = os.getenv("PATH", "")
-    paths = old_path.split(os.pathsep) if old_path else []
-    if new_dir not in paths:
-        paths.append(new_dir)
-    new_path = os.pathsep.join(paths)
-    env["PATH"] = new_path
-
-    # Add license file
-    env[mpm_env.get_env_name_network_license_manager()] = "/opt/network/matlab/license_files/License_File_R2024a.dat"
-
-    return env
 
 
 def setup_matlab():
